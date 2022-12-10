@@ -1,5 +1,6 @@
 const client = require("../bot.js");
-const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder, AttachmentBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
+const tempo = require("ms");
 
 client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isButton()) return
@@ -1114,3 +1115,139 @@ interaction.editReply({
   
                  }
 })
+
+
+//============= | Explorar Mundo | ============
+client.on("interactionCreate", async interaction => {
+	if (!interaction.isStringSelectMenu()) return;
+
+	if (interaction.customId === `explorar_${interaction.user.id}`) {
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+await interaction.deferUpdate()
+
+    let opcao = interaction.values[0];
+
+    if (opcao === "1"){
+      let botao = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`explorar_${interaction.user.id}`)
+					.setLabel('Sua exploração terminará em 1 minuto')
+					.setStyle(ButtonStyle.Primary)
+          .setDisabled(true)
+			);
+
+let f = new AttachmentBuilder("https://cdn.discordapp.com/attachments/1028756005556846632/1036807732998717471/aventura.png", {name: 'terminou.png'});
+
+let comidas = Math.floor(Math.random() * 5) + 15
+
+    interaction.editReply({
+      content: `<a:Doguinhu:795105130311712829> | ${interaction.user}`,
+      components: [botao]
+    }).then(async(msg) => {
+      setTimeout(async() => {
+
+
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+    "rpg.status.fome": userdb.rpg.status.fome - 1,
+    "rpg.item.comida": userdb.rpg.item.comida + comidas
+         }
+        })
+        
+        msg.reply({
+           content: `${interaction.user} você explorou seu mundo pra achar comida e você achou ${comidas} comida!`,
+           files: [f]
+        })
+      }, tempo("1m"));
+    });
+    } 
+
+    if (opcao === "2"){
+      let ilhas = ["Não", "Não", "Não", "Não", "Não", "Sim", "Não", "Não"];
+
+    let ilha = ilhas[Math.floor(Math.random() * ilhas.length)];
+
+let bioma = ["Em criação..."];
+
+const comida = Math.floor(Math.random() * 5) + 15
+
+let a = Math.floor(Math.random() * 50) + 500
+
+let botao = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`explorar_${interaction.user.id}`)
+					.setLabel('Sua exploração terminará em 5 minutos')
+					.setStyle(ButtonStyle.Primary)
+          .setDisabled(true)
+			);
+
+let f = new AttachmentBuilder("https://cdn.discordapp.com/attachments/1028756005556846632/1036807732998717471/aventura.png", {name: 'terminou.png'});
+
+let comidas = Math.floor(Math.random() * 5) + 15
+
+    interaction.editReply({
+      content: `<a:Doguinhu:795105130311712829> | ${interaction.user}`,
+      components: [botao]
+    }).then(async(msg) => {
+      setTimeout(async() => {
+        if (ilha === "Sim"){
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+    "rpg.status.fome": userdb.rpg.status.fome - 2,
+    "rpg.item.comida": userdb.rpg.item.comida + comida,
+        "explorar.ilhaflutuanteA": a
+         }
+        })
+
+      msg.reply({content: `<a:Doguinhu:795105130311712829> | ${interaction.user}\n> Achou ilha flutuante? **\`${ilha}\`**\n> Achou novo bioma? **\`${bioma}\`**> Comida: **\`${comidas}\`**`, files: [f]})
+         }
+        if (ilha === "Não"){
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+    "rpg.status.fome": userdb.rpg.status.fome - 2,
+    "rpg.item.comida": userdb.rpg.item.comida + comidas
+         }
+        })
+
+  msg.reply({content: `<a:Doguinhu:795105130311712829> | ${interaction.user}\n> Achou ilha flutuante? **\`${ilha}\`**\n> Achou novo bioma? **\`${bioma}\`**> Comida: **\`${comida}\`**`, files: [f]})
+         }
+      }, tempo("5m"))
+    })
+      
+    }
+	}
+});
