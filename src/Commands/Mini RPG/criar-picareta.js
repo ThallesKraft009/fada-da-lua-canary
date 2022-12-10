@@ -48,7 +48,7 @@ let userdb = await client.userdb.findOne({
      }
 
    let uid = userdb.uid;
-    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+    if (uid === null) return interaction.reply({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
 
     if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
 
