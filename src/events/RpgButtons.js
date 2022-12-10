@@ -6,7 +6,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
 
-//============= | Coletar Madeira | ===============
+//=========== | Coletar Madeira | ===============
 
   if (interaction.customId === `madeira_${interaction.user.id}`) {
 
@@ -136,7 +136,7 @@ interaction.editReply({
   if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
                                ephemeral: true                            })
 
-    if (userdb.rpg.status.vida < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
                                ephemeral: true                            })
 
         await interaction.deferUpdate()
@@ -273,7 +273,7 @@ let userdb = await client.userdb.findOne({
   if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
                                ephemeral: true                            })
 
-    if (userdb.rpg.status.vida < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
                                ephemeral: true                            })
 
         
@@ -346,7 +346,7 @@ let userdb = await client.userdb.findOne({
   if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
                                ephemeral: true                            })
 
-    if (userdb.rpg.status.vida < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
                                ephemeral: true                            })
 
         
@@ -417,7 +417,7 @@ let userdb = await client.userdb.findOne({
   if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
                                ephemeral: true                            })
 
-    if (userdb.rpg.status.vida < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
                                ephemeral: true                            })
 
         
@@ -488,7 +488,7 @@ let userdb = await client.userdb.findOne({
   if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
                                ephemeral: true                            })
 
-    if (userdb.rpg.status.vida < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
                                ephemeral: true                            })
 
      
@@ -526,7 +526,591 @@ await client.userdb.updateOne({
     components: [continuar],
     ephemeral: true
   })
-}      
-    
+    }    
   }
+
+//============= | Minerar Cobre | ===============
+if (interaction.customId === `picaretaTitanioCobre_${interaction.user.id}`){
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.titanio === 0 || userdb.rpg.picaretas.titanio < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de titânio, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+  
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.cobre": userdb.rpg.mineriosBloco.cobre + valor,
+  "rpg.picaretas.titanio": userdb.rpg.picaretas.titanio - valor + 5,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de cobre utilizando uma picareta de titânio!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+     }
+   }
+
+
+  if (interaction.customId === `picaretaFerroCobre_${interaction.user.id}`){
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.ferro === 0 || userdb.rpg.picaretas.ferro < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de ferro, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+  
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.cobre": userdb.rpg.mineriosBloco.cobre + valor,
+  "rpg.picaretas.ferro": userdb.rpg.picaretas.ferro - valor + 2,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de cobre utilizando uma picareta de ferro!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+     }
+  }
+
+
+  if (interaction.customId === `picaretaCobreCobre_${interaction.user.id}`){
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.cobre === 0 || userdb.rpg.picaretas.cobrr < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de cobre, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+  
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.cobre": userdb.rpg.mineriosBloco.cobre + valor,
+  "rpg.picaretas.cobre": userdb.rpg.picaretas.cobre - valor + 1,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de cobre utilizando uma picareta de cobre!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+       
+     }
+  }
+
+
+
+  if (interaction.customId === `picaretaPedraCobre_${interaction.user.id}`){
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.pedra === 0 || userdb.rpg.picaretas.pedra < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de pedra, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+  
+await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.cobre": userdb.rpg.mineriosBloco.cobre + valor,
+  "rpg.picaretas.pedra": userdb.rpg.picaretas.pedra - valor,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de cobre utilizando uma picareta de pedra!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+      }
+     }
+
+
+  //============ | Minerar Ferro | ==============
+
+  if (interaction.customId === `picaretaTitanioFerro_${interaction.user.id}`){
+
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.titanio === 0 || userdb.rpg.picaretas.titanio < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de titânio, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+       await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.ferro": userdb.rpg.mineriosBloco.ferro + valor,
+  "rpg.picaretas.titanio": userdb.rpg.picaretas.titanio - valor + 5,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de ferro utilizando uma picareta de titânio!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+
+    }
+  }
+
+
+
+    if (interaction.customId === `picaretaFerroFerro_${interaction.user.id}`){
+
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.ferro === 0 || userdb.rpg.picaretas.ferro < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de ferro, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+       await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.ferro": userdb.rpg.mineriosBloco.ferro + valor,
+  "rpg.picaretas.ferro": userdb.rpg.picaretas.ferro - valor + 3,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de ferro utilizando uma picareta de ferro!`,
+    components: [continuar],
+    ephemeral: true
+})
+     }
+    }
+
+
+
+
+  if (interaction.customId === `picaretaCobreFerro_${interaction.user.id}`){
+
+
+let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+     if (userdb.rpg.picaretas.cobre === 0 || userdb.rpg.picaretas.cobre < 0) {
+  interaction.reply({content: `:x: | Você não tem uma picareta de cobre, crie uma utizando **\`/criar-picareta\`**!`, ephemeral: true})
+} else {
+       
+let valor = Math.floor(Math.random() * 2) + 20
+
+  await interaction.deferUpdate()
+       
+  let continuar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+					.setCustomId(`minerar_${interaction.user.id}`)
+					.setLabel('Continuar mineração')
+					.setStyle(ButtonStyle.Secondary)
+  )
+
+       await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.mineriosBloco.ferro": userdb.rpg.mineriosBloco.ferro + valor,
+  "rpg.picaretas.cobre": userdb.rpg.picaretas.cobre - valor + 5,
+      "rpg.status.fome": userdb.rpg.status.fome - 1
+         }
+        })
+
+interaction.editReply({
+      content: `⛏️ | Você minerou ${valor} minérios de ferro utilizando uma picareta de cobre!`,
+    components: [continuar],
+    ephemeral: true
+})
+
+
+    }
+  }
+
+
+
+//============= | Atacar Monstros | ============
+  if (interaction.customId === `mob_${interaction.user.id}`){
+
+    let userdb = await client.userdb.findOne({
+         userID: interaction.user.id
+     }) 
+
+      if(!userdb){
+         const newuser = new client.userdb({ userID: interaction.user.id })
+         await newuser.save();
+
+        interaction.reply({
+          content: `Eu salvei suas informações (Tag, Id, Avatar, Nome) em meu banco de dados, utilize o comando novamente pra funcionar.`,
+          ephemeral: true
+        })
+         
+         userdb = await client.userdb.findOne({ userID: interaction.user.id })
+     }
+
+   let uid = userdb.uid;
+    if (uid === null) return interaction({content: `Você não salvou seu uid, salve utilizando \`/salvar-uid\`!`, ephemeral: true})
+
+    if (userdb.rpg.mundoStatus === false) return interaction.reply({content: `Você precisa criar um mundo, utilize **\`/novo-mundo\`**!`, ephemeral: true})
+
+    if (userdb.rpg.d === "Horas" || userdb.rpg.d === "Nether") return interaction.reply({
+  content: `:x: | Você não está em Miras...`,
+  ephemeral: true
+})
+
+  if (userdb.rpg.status.vida < 10) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com vida baixa, recupere vida utilizando **\`/comer\`**!`,
+                               ephemeral: true                            })
+
+    if (userdb.rpg.status.fome < 5) return interaction.reply({content: `Você não pode minerar em seu mundo pois está com fome, utilize **\`/comer\`** pra não ficar com fome.`,
+                               ephemeral: true                            })
+
+  let statust = ["matou", "f", "matou", "matou"];
+
+  
+let status = statust[Math.floor(Math.random() * statust.length)];
+
+      await interaction.deferUpdate()
+    
+  if (status === "f"){
+
+    let vidaa = Math.floor(Math.random() * 2) + 5
+
+  await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.status.vida": userdb.rpg.status.vida - vidaa,
+    "rpg.status.fome": userdb.rpg.status.fome - 2
+         }
+        })
+
+    let botao1 = new ActionRowBuilder().addComponents(
+      new ButtonBuilder() .setCustomId(`minerar_${interaction.user.id}`) .setLabel('Continuar') .setStyle(ButtonStyle.Secondary) 
+    )
+
+interaction.editReply({
+  content: `Você não consegiu matar o monstro, mas fugiu. No entanto, Você perdeu **\`${vidaa}\`** de vida!`,
+  components: [botao1],
+  ephemeral: true
+})
+
+
+  } else {
+    
+let vida = Math.floor(Math.random() * 2) + 5
+
+  await client.userdb.updateOne({
+         userID: interaction.user.id
+     }, { $set: {
+         "rpg.status.vida": userdb.rpg.status.vida - vida,
+        "rpg.status.fome": userdb.rpg.status.fome - 2
+         }
+        })
+
+    let botao2 = new ActionRowBuilder().addComponents(
+      new ButtonBuilder() .setCustomId(`minerar_${interaction.user.id}`) .setLabel('Continuar') .setStyle(ButtonStyle.Secondary) 
+    )
+
+interaction.editReply({
+  content: `Você  consegiu matar o monstro! No entanto, Você perdeu **\`${vida}\`** de vida!`,
+  components: [botao2],
+  ephemeral: true
+})
+
+
+  }
+  
+                 }
 })
