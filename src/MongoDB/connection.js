@@ -23,4 +23,6 @@ client.once("ready", () => {
 
 client.userdb = require("./Database/user.js");
 
+
+    require("./KaedeDados")(client);
  }
